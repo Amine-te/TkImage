@@ -1153,9 +1153,10 @@ class MainWindow:
             return
 
         self._roi_mode_enabled = True
-        self.status_label.config(
-            text="Mode ROI souris — cliquez et faites glisser pour sélectionner une région.",
-        )
+        if self.status_panel is not None:
+            self.status_panel.set_message(
+                "Mode ROI souris — cliquez et faites glisser pour sélectionner une région.",
+            )
 
         def on_box_selected(box: tuple[int, int, int, int]) -> None:
             # Apply crop with undo support.

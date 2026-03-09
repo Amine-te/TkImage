@@ -107,6 +107,15 @@ class StatusPanel(ttk.Frame):
         self._mode_value.config(text=mode or "-")
         self._filesize_value.config(text=f"{file_size_kb:.1f} Ko" if file_size_kb else "-")
 
+    def set_message(self, text: str) -> None:
+        """
+        Update only the summary message line.
+
+        Used for transient statuses such as ROI mode hints without
+        touching the detailed metadata fields.
+        """
+        self._summary_label.config(text=text)
+
     # ------------------------------------------------------------------ #
     # Annotation handling
     # ------------------------------------------------------------------ #
