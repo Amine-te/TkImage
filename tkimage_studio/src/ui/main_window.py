@@ -79,51 +79,78 @@ class MainWindow:
         except tk.TclError:
             # Fallback silently if the theme isn't available.
             pass
-        base_bg = "#f5f5f7"
-        card_bg = "#ffffff"
-        text_main = "#1f2933"
-        accent_purple = "#7c3aed"  # primary actions
-        accent_blue = "#2563eb"    # informational
-        accent_yellow = "#f59e0b"  # warnings
-        accent_red = "#dc2626"     # destructive
+        # Modern UI color palette and typography
+        base_bg = "#f3f4f6"        # Light gray background
+        card_bg = "#ffffff"        # Clean white panels
+        text_main = "#111827"      # Dark text
+        text_muted = "#6b7280"     # Muted gray text
+        accent_primary = "#4f46e5" # Elegant Indigo
+        accent_hover = "#4338ca"   # Darker Indigo for hover
+        border_color = "#e5e7eb"
+
+        # Fonts
+        default_font = ("Segoe UI", 10)
+        small_font = ("Segoe UI", 9)
+        bold_font = ("Segoe UI", 10, "bold")
 
         # Base widgets
         style.configure("TFrame", background=base_bg)
-        style.configure("Card.TFrame", background=card_bg, relief="flat")
-        style.configure("TLabel", background=base_bg, foreground=text_main)
-        style.configure("Muted.TLabel", background=base_bg, foreground="#6b7280")
+        style.configure("Card.TFrame", background=card_bg, relief="flat", borderwidth=0)
+        style.configure("TLabel", background=base_bg, foreground=text_main, font=default_font)
+        style.configure("Card.TLabel", background=card_bg, foreground=text_main, font=default_font)
+        style.configure("Muted.TLabel", background=base_bg, foreground=text_muted, font=small_font)
+        style.configure("CardMuted.TLabel", background=card_bg, foreground=text_muted, font=small_font)
 
         # Generic buttons
         style.configure(
             "TButton",
-            padding=4,
+            padding=(10, 6),
             background=card_bg,
             foreground=text_main,
             borderwidth=1,
-            focusthickness=1,
+            bordercolor=border_color,
+            relief="solid", # or flat with border in custom themes, solid usually creates a 1px border
+            font=default_font,
+            focusthickness=0,
         )
         style.map(
             "TButton",
-            background=[("active", "#e5e7eb")],
+            background=[("active", "#f9fafb")],
         )
 
         # Primary navigation buttons
         style.configure(
             "Primary.TButton",
-            background=accent_purple,
+            padding=(12, 8),
+            background=accent_primary,
             foreground="#ffffff",
+            font=bold_font,
+            borderwidth=0,
+            focusthickness=0,
         )
         style.map(
             "Primary.TButton",
-            background=[("active", "#6d28d9")],
+            background=[("active", accent_hover)],
         )
 
         # Toolbar buttons (subtle)
         style.configure(
             "Tool.TButton",
+            padding=(8, 8),
             background=card_bg,
             foreground=text_main,
+            font=small_font,
+            borderwidth=1,
+            focusthickness=0,
         )
+        style.map(
+            "Tool.TButton",
+            background=[("active", "#f3f4f6")],
+        )
+        
+        # Entries and Spinboxes
+        style.configure("TEntry", padding=4, font=default_font)
+        style.configure("TSpinbox", padding=4, font=default_font)
 
         # Use grid to organize the main zones: top, center, bottom.
         self.root.rowconfigure(0, weight=0)  # Top menu area (fixed height)
@@ -236,11 +263,11 @@ class MainWindow:
             central_frame,
             callbacks=self._callbacks_for_toolbar_and_menu,
         )
-        self.left_toolbar.grid(row=0, column=0, sticky="ns")
+        self.left_toolbar.grid(row=0, column=0, sticky="ns", padx=(8, 4), pady=(8, 8))
 
         # Center stack: image viewer (dominant), nav buttons, thumbnails
         center_container = ttk.Frame(central_frame, style="Card.TFrame")
-        center_container.grid(row=0, column=1, sticky="nsew", padx=(4, 4), pady=(0, 4))
+        center_container.grid(row=0, column=1, sticky="nsew", padx=(4, 4), pady=(8, 8))
         center_container.rowconfigure(0, weight=1)
         center_container.rowconfigure(1, weight=0)
         center_container.rowconfigure(2, weight=0)
@@ -298,7 +325,7 @@ class MainWindow:
 
         # Right side annotation & stats panel
         self.right_panel = RightPanel(central_frame)
-        self.right_panel.grid(row=0, column=2, sticky="nsew", pady=(0, 4))
+        self.right_panel.grid(row=0, column=2, sticky="nsew", padx=(4, 8), pady=(8, 8))
 
     def _create_bottom_status_bar(self) -> None:
         """Create a simple status/info bar at the bottom of the window."""

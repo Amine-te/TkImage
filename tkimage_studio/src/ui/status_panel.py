@@ -14,7 +14,7 @@ class StatusPanel(ttk.Frame):
     """
 
     def __init__(self, master: tk.Widget) -> None:
-        super().__init__(master, padding=(8, 4))
+        super().__init__(master, padding=(16, 8))
 
         # Metadata summary line
         self._summary_label = ttk.Label(

@@ -29,7 +29,7 @@ class LeftToolbar(ttk.Frame):
         on typical screens.
         """
         inner = ttk.Frame(self)
-        inner.pack(fill="y", expand=False)
+        inner.pack(fill="y", expand=False, padx=4, pady=4)
 
         # Helper to create a button bound to a callback key.
         def add_btn(text: str, key: str) -> None:
@@ -37,10 +37,10 @@ class LeftToolbar(ttk.Frame):
                 inner,
                 text=text,
                 command=lambda k=key: self._invoke(k),
-                width=8,
+                width=12,
                 style="Tool.TButton",
             )
-            btn.pack(fill="x", pady=4)
+            btn.pack(fill="x", pady=2)
 
         # Geometric transforms and utilities focused on image operations.
         add_btn("Redimensionner", "tool_resize")

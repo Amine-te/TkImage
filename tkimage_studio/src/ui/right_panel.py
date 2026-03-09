@@ -13,7 +13,7 @@ class RightPanel(ttk.Frame):
     """
 
     def __init__(self, master: tk.Widget) -> None:
-        super().__init__(master, style="Card.TFrame", padding=8)
+        super().__init__(master, style="Card.TFrame", padding=16)
 
         ttk.Label(self, text="Annotations", anchor="w").grid(
             row=0, column=0, columnspan=2, sticky="ew", pady=(0, 4)
