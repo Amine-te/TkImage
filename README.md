@@ -1,3 +1,184 @@
+## TkImage Studio
+
+TkImage Studio is a desktop tool for **image dataset exploration, preprocessing, annotation, and lightweight classification model training**, built with **Tkinter**, **Pillow**, and optional **PyTorch**/**torchvision**.
+
+It is inspired by tools like Roboflow: load a folder of images, browse and preprocess them, annotate for classification, export annotations, and (optionally) train a small CNN classifier — all from a clean, single-window interface plus a dedicated training window.
+
+---
+
+### Features
+
+- **Dataset navigation**
+  - Open a single image or an entire folder.
+  - Thumbnail strip and Prev/Next navigation.
+  - Keyboard support: **← / →** to move between images.
+
+- **Image viewing & interaction**
+  - Centered canvas with **fit-to-window scaling**.
+  - **Zoom** via mouse wheel or toolbar (Zoom + / Zoom - / Adapter).
+  - **Pan** when zoomed in (middle mouse drag).
+  - **Mouse-based ROI cropping** (Souris ROI) with precise mapping back to image coordinates.
+
+- **Preprocessing (Pillow-based)**
+  - Geometry: resize, compress (scale by percentage), numeric crop, rotate.
+  - Filters: grayscale, blur, sharpness, contrast, brightness, inversion, autocontrast.
+  - Undo stack (up to 10 steps) with **Édition → Annuler** or **Ctrl+Z**.
+
+- **Annotations for classification**
+  - Per-image JSON annotation files stored in `tkimage_studio/data/annotations/`.
+  - Fields: description, note (1–5), classe (label), tags (comma-separated).
+  - Auto-save when switching images or dataset; auto-load when revisiting images.
+  - Bottom status bar for quick edits, right panel for a more spacious view.
+  - Export/import all annotations to/from **JSON** and **CSV**.
+
+- **Statistics**
+  - Per-image stats: width, height, color mode, file size, per-channel mean/min/max.
+  - Dataset stats: number of images, average note, images per class.
+  - Stats popup accessible from the left toolbar (**Stats** button).
+
+- **Classification model training (optional)**
+  - Uses the **current dataset and annotations** from the main UI.
+  - Simple CNN backed by PyTorch/torchvision.
+  - Training window with configurable epochs, batch size, and learning rate.
+  - Training logs and final loss/accuracy.
+  - Single-image prediction with top-k class probabilities.
+
+---
+
+### Installation
+
+From the project root (`TkImage_v1`):
+
+```bash
+pip install -r requirements.txt
+```
+
+Requirements:
+
+- **Required**
+  - Python 3.9+
+  - `Pillow` (image I/O and processing)
+- **Optional (for model training / inference)**
+  - `torch`
+  - `torchvision`
+
+Tkinter is part of the standard Python distribution on Windows, so no extra dependency is needed.
+
+---
+
+### Running the Application
+
+From the project root:
+
+```bash
+cd TkImage_v1
+py -m tkimage_studio.main
+```
+
+This launches the main TkImage Studio window.
+
+---
+
+### Quick Start Workflow
+
+#### 1. Load a dataset
+
+- Use **Fichier → Ouvrir dossier** to select a folder of images.
+- Use the **thumbnail strip** and **Prev/Next** buttons (or **← / →** keys) to navigate between images.
+
+#### 2. Explore and preprocess
+
+- Use the **left toolbar**:
+  - `Redimensionner`, `Compresser`, `Rogner`, `Pivoter` for geometric changes.
+  - `Souris ROI` to crop an area by drawing a rectangle with the mouse.
+  - `Zoom +`, `Zoom -`, `Adapter` to inspect details or reset view.
+- Alternatively, use the **Filtres** menu to apply grayscale, blur, contrast, etc.
+- Use **Édition → Annuler** or **Ctrl+Z** to revert up to 10 operations.
+
+#### 3. Annotate for classification
+
+- In the **bottom bar**, fill in:
+  - **Description**: free text.
+  - **Note (1–5)**: quality/importance/confidence score.
+  - **Classe**: class/label for classification.
+  - **Tags**: comma-separated keywords (e.g. `blurry, night, occluded`).
+- The **right panel** mirrors these fields with a larger editable area.
+- When you change images or folders, annotations are automatically saved to `tkimage_studio/data/annotations/{image_name}.json` and reloaded when you come back.
+
+#### 4. Export / import annotations
+
+- **Export**:
+  - Use **Fichier → Exporter annotations**.
+  - Choose a JSON or CSV file path, or cancel to write to defaults:
+    - `tkimage_studio/data/annotations/export.json`
+    - `tkimage_studio/data/annotations/export.csv`
+- **Import**:
+  - Use **Fichier → Importer annotations**.
+  - Select a JSON export file; per-image JSON files in `tkimage_studio/data/annotations/` will be recreated/updated accordingly.
+
+#### 5. View stats
+
+- Click **Stats** in the left toolbar.
+- The popup shows:
+  - Image stats: dimensions, mode, file size, per-channel mean/min/max.
+  - Dataset stats: number of images in the current dataset, average note, image counts per class.
+
+#### 6. Train a simple classification model (optional)
+
+- Ensure your images are annotated with **Classe** values.
+- With a folder open, go to **Modèles → Entraîner un modèle de classification…**.
+- In the training window:
+  - Confirm the dataset summary (number of images from the main UI).
+  - Set model to `simple_cnn` (default) and adjust epochs, batch size, learning rate if desired.
+  - Click **Lancer l'entraînement**:
+    - Training runs in the background; logs appear in the text area.
+  - When training completes, click **Tester sur une image…** to evaluate an arbitrary image:
+    - A popup shows predicted class and top-k probabilities.
+
+---
+
+### Keyboard and Mouse Shortcuts
+
+- **Navigation**
+  - `←` / `→`: Previous / next image (if a folder is loaded).
+
+- **Undo**
+  - `Ctrl+Z`: Undo last image operation.
+
+- **Zoom & Pan**
+  - Mouse wheel over image: zoom in/out.
+  - Middle mouse button drag: pan when zoomed.
+
+- **ROI Crop**
+  - Click **Souris ROI**, then left-click and drag on the image to select a region. Release to crop.
+
+---
+
+### Project Structure (Overview)
+
+- `tkimage_studio/main.py`: Application entry point. Creates the Tk root and `MainWindow`.
+- `tkimage_studio/src/ui/`:
+  - `main_window.py`: Overall layout, state management, glue between UI and core logic.
+  - `menu_bar.py`: All menus and items, mapped by callback keys.
+  - `left_toolbar.py`: Slim vertical toolbar for image utilities and stats.
+  - `image_viewer.py`: Canvas-based viewer with zoom, pan, and ROI selection.
+  - `status_panel.py`: Bottom status + quick annotation controls.
+  - `right_panel.py`: Right-side annotation panel (larger text area).
+  - `training_window.py`: Separate model training/testing window for CNNs.
+- `tkimage_studio/src/core/`:
+  - `file_manager.py`: Image open/save operations and dataset folder listing.
+  - `image_loader.py`: Safe image loading wrapper around `Pillow`.
+  - `image_processor.py`: Pure image transformations (resize, crop, rotate, filters).
+  - `annotation_manager.py`: Per-image annotation JSON storage, export/import utilities.
+  - `stats_manager.py`: Per-image and dataset statistics computation.
+  - `classification_manager.py`: Optional PyTorch-based dataset adapter, training loop, and inference helpers.
+- `tkimage_studio/data/`:
+  - `input_images/`: Suggested location for raw inputs.
+  - `output_images/`: Saved outputs from “Enregistrer” / “Enregistrer sous”.
+  - `annotations/`: Per-image annotation JSON files and exported datasets (`export.json`, `export.csv`).
+
+For a deeper architectural explanation and design rationale, see `tkimage_studio/TECHNICAL_REPORT.md`.
+
 ## TkImage Studio (Work-in-Progress)
 
 TkImage Studio is a desktop application built with **Tkinter** and **Pillow** for managing, preprocessing, and annotating image datasets for **machine learning (classification)** projects.  
