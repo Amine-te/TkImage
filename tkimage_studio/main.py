@@ -16,6 +16,13 @@ def main() -> None:
     layout class, and starts the Tkinter event loop.
     """
     root = tk.Tk()
+    try:
+        from pathlib import Path
+        icon_path = Path(__file__).parent / "static" / "image.png"
+        icon = tk.PhotoImage(file=str(icon_path))
+        root.iconphoto(False, icon)
+    except Exception as e:
+        print(f"Could not load application icon: {e}")
     MainWindow(root)
     root.mainloop()
 
